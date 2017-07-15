@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Taxi Service</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <div>
+            <button onclick="requestCar();">Request a car</button>
+            <button onclick="registerUser();">Register User</button>
+            <button onclick="registerDriver();">Register Driver</button>
+            <button onclick="updateLocation();">Update Location</button>
+            <button onclick="stopTrip();" id="endTrip" style="display: none;">Stop Trip</button>
+        </div>
+        <script>
+            function requestCar(){
+                console.log("request");
+                $.ajax({
+                    type    : 'POST',
+                    url     : 'http://127.0.0.1:88/requestCar',
+                    data    : {user: localStorage.getItem('user')},
+                    success : function(res){
+                        console.log(res);
+                        localStorage.setItem('trip', JSON.stringify(res));
+                        if (confirm("Start Trip") == true) {
+                            console.log("---------------");
+                            $.ajax({
+                                type    : 'POST',
+                                url     : 'http://127.0.0.1:88/startTrip',
+                                data    : {user : res.user, driver: res.driver},
+                                success : function(resp){
+                                    console.log(resp);
+                                    $("#endTrip").show();
+                                }, 
+                                error   : function (jqXHR, textStatus, errorThrown) {
+
+                                }
+                            });
+                        } else {
+                            
+                        }
+                    }, 
+                    error   : function (jqXHR, textStatus, errorThrown) {
+                        
+                    }
+                });
+            }
+            
+            function stopTrip(){
+                console.log("request");
+                var trip = JSON.parse(localStorage.getItem('trip'));
+                $.ajax({
+                    type    : 'POST',
+                    url     : 'http://127.0.0.1:88/stopTrip',
+                    data    : {user: trip.user, driver: trip.driver, latitude: 14.0202, longitude: 18.0202},
+                    success : function(res){
+                        console.log(res);
+                        localStorage.removeItem('trip');
+                        $("#endTrip").hide();
+                    }, 
+                    error   : function (jqXHR, textStatus, errorThrown) {
+                        
+                    }
+                });
+            }
+            
+            function registerUser(){
+                var userId = generateId(5, '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+                $.ajax({
+                    type    : 'POST',
+                    url     : 'http://127.0.0.1:88/registerUser',
+                    data    : {userId: userId, username: 'test', latitude: 0, longitude: 0, isPink: false},
+                    success : function(res){
+                        console.log(res);
+                        console.log(res.user);
+                        localStorage.setItem('user', JSON.stringify(res.user));
+                    }, 
+                    error   : function (jqXHR, textStatus, errorThrown) {
+                        
+                    }
+                });
+            }
+            
+            function registerDriver(){
+                var userId = generateId(5, '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+                $.ajax({
+                    type    : 'POST',
+                    url     : 'http://127.0.0.1:88/registerDriver',
+                    data    : {driverId: userId, drivername: 'driver', latitude: 0, longitude: 0},
+                    success : function(res){
+                        console.log(res);
+                        localStorage.setItem('user', JSON.stringify(res.user));
+                    }, 
+                    error   : function (jqXHR, textStatus, errorThrown) {
+                        
+                    }
+                });
+            }
+            
+            function updateLocation(type){
+                if(type === 'user'){
+                    $.ajax({
+                        type    : 'POST',
+                        url     : 'http://127.0.0.1:88/updateLocation',
+                        data    : {uid: localStorage.getItem('user').userId, latitude:11.1245, longitude: 17.1245, type: 'driver'},
+                        success : function(res){
+                            console.log(res);
+                            var data = JSON.parse(localStorage.getItem('user'));
+                            data.location = res.location;
+                            localStorage.setItem('user', JSON.stringify(data));
+                        }, 
+                        error   : function (jqXHR, textStatus, errorThrown) {
+
+                        }
+                    });
+                } else {
+                    $.ajax({
+                        type    : 'POST',
+                        url     : 'http://127.0.0.1:88/updateLocation',
+                        data    : {uid: localStorage.getItem('user').userId, latitude:11.1245, longitude: 17.1245, type: 'user'},
+                        success : function(res){
+                            console.log(res);
+                            var data = JSON.parse(localStorage.getItem('user'));
+                            data.location = res.location;
+                            localStorage.setItem('user', JSON.stringify(data));
+                        }, 
+                        error   : function (jqXHR, textStatus, errorThrown) {
+
+                        }
+                    });
+                }
+            }
+            
+            function generateId(length, chars) {
+                var result = '';
+                for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+                return result;
+            }
+            
+        </script>
+    </body>
+</html>

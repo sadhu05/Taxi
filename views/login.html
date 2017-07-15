@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Taxi Service</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <div>
+            <button onclick="login();">Request a car</button>
+        </div>
+        <script>
+            function register(){
+                console.log("request");
+                $.ajax({
+                    type    : 'POST',
+                    url     : 'http://127.0.0.1:88/requestCar',
+                    data    : {userId: 1, latitude: 121212, longitude: 121212, isPink: false},
+                    success : function(res){
+                        console.log(res);
+                    }, 
+                    error   : function (jqXHR, textStatus, errorThrown) {
+                        
+                    }
+                });
+            }
+        </script>
+    </body>
+</html>

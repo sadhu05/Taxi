@@ -1,0 +1,19 @@
+{
+  "name": "TaxiService",
+  "version": "1.0.0",
+  "keywords": [
+    "util",
+    "functional",
+    "server",
+    "client",
+    "browser"
+  ],
+  "author": "Sadhu",
+  "contributors": [],
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "mongodb": "^2.2.30",
+    "socket.io": "^2.0.3"
+  }
+}
